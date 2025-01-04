@@ -1,0 +1,106 @@
+using System.Collections;
+using UnityEngine;
+
+public class attackPlayer : MonoBehaviour
+{
+    public GameObject swords1;
+    public GameObject Player;
+    public GameObject cross;
+    public GameObject Fireball1;
+    public GameObject Fireball2;
+    public ChooseMove chooseMove;
+    public GameObject boss;
+    public SpriteRenderer FireballRed;
+    public SpriteRenderer FireballBlue;
+    public Sprite fireballRed1;
+    public Sprite fireballBlue1;
+    public Sprite fireballRed2;
+    public Sprite fireballBlue2;
+    public EnemyHealth EnemyHealth;
+    public Vector3 fireballPosition;
+    public GameObject fireballBlue;
+    public GameObject fireballRed;
+
+    void Start()
+    {
+        boss = GameObject.Find("boss");
+        Player = GameObject.FindGameObjectWithTag("Player");
+        EnemyHealth = boss.GetComponent<EnemyHealth>();
+        chooseMove = boss.GetComponent<ChooseMove>();
+        SpawnCross();
+        SpawnSword();
+        StartCoroutine(FireballSpawn(Fireball1));
+        StartCoroutine(FireballSpawn(Fireball2));
+    }
+
+    void Update()
+    {
+    }
+
+    public void SpawnCross()
+    {
+        if (chooseMove.cross == true || EnemyHealth.Phase >= 2)
+        {
+            if (EnemyHealth.isImmune == false)
+            {
+                Instantiate(cross, new Vector3(Player.transform.position.x - 9.2f, -2.5f, Player.transform.position.z), new Quaternion(0f, 0f, 0f, 0));
+                Invoke("SpawnCross", 3);
+            }
+
+        }
+        else
+        {
+            Invoke("SpawnCross", 3);
+        }
+    }
+    public void SpawnSword()
+    {
+        Instantiate(swords1, new Vector3(Player.transform.position.x - 9.2f, Player.transform.position.y + 9f, Player.transform.position.z), new Quaternion(0f, 0f, 0f, 0));
+        Invoke("SpawnSword", 4);
+    }
+
+    public IEnumerator FireballSpawn(GameObject Fireball)
+    {
+                if (EnemyHealth.Phase >= 2 && EnemyHealth.isImmune == false)
+                {
+                    for (int i = 0; i < 6; i++)
+                    {
+                        fireballPosition.x = Random.Range(-23f, 77f);
+                        fireballPosition.y = Random.Range(-30, 35f);
+                        GameObject newFireball = Instantiate(Fireball, fireballPosition, new Quaternion(0, 0, 0, 0));
+
+                        yield return new WaitForSeconds(1 / 6);
+                    }
+                    yield return new WaitForSeconds(2f);
+                    StartCoroutine(FireballSpawn(Fireball));
+                }
+        //Broken Code Here^^
+        //Broken Code Here^^
+        //Broken Code Here^^
+      
+    }
+    public IEnumerator switchFbSprites()
+    {
+        if (FireballRed)
+        {
+            FireballRed.sprite = fireballRed1;
+            yield return new WaitForSeconds(0.1f);
+
+            FireballRed.sprite = fireballRed2;
+            yield return new WaitForSeconds(0.1f);
+
+            StartCoroutine(switchFbSprites());
+        }
+
+        if (FireballBlue)
+        {
+            FireballBlue.sprite = fireballBlue1;
+            yield return new WaitForSeconds(0.1f);
+
+            FireballBlue.sprite = fireballBlue2;
+            yield return new WaitForSeconds(0.1f);
+
+            StartCoroutine(switchFbSprites());
+        }
+    }
+}
